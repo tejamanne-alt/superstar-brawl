@@ -1,0 +1,16 @@
+# render intermediates (multilayer EXR passes, previews) - regenerate with art/pipeline/run_all.sh
+art/build/
+__pycache__/
+*.pyc
+.venv/
+venv/
+# Unity (for the upcoming game project)
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+*.csproj
+*.sln
