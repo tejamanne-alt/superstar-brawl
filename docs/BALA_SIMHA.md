@@ -28,7 +28,7 @@ The earlier code-sculpted version (`sb/bala.py`, `render_bala.py`) is kept for r
 | Beard | Full but trimmed close; salt-and-pepper, darker on the cheeks and greyest at the chin; follows the jaw and stops at it |
 | Mustache | Thick and dark, covering the upper lip and drooping at the corners into the beard |
 | Face | Broad; fleshy cheeks and jowls; strong straight nose with a broad tip; heavy upper lids; light forehead lines |
-| Build | About 1.72 m and stocky: broad shoulders, thick neck, a slight belly; head about 7% larger than standard for presence |
+| Build | About 1.78 m (FBX) and stocky: broad shoulders, thick neck, a slight belly; head about 7% larger than standard for presence |
 | Outfit | Black shirt with an open collar, chest pocket and full sleeves; gold chain; cream dhoti with a gold border; kolhapuri sandals |
 | Jewellery | Gold watch on the left wrist, gold rings |
 | Signature pose | The "mass walk": striding forward, right hand gathering the dhoti (from the FBX); arms-crossed intro as an alternate |
@@ -42,8 +42,8 @@ hatch strokes in cloth shadows. In game, the same model switches to the ink-dot 
 
 ## Expressions
 
-Smirk (default, shades on) · Glare (shades off, brows down) · Roar (mouth open, shades on) · Mass laugh
-(shades off). Expressions change the sculpt (jaw, lips, mustache corners, brows) and the painted face decal.
+The FBX has one fixed expression (stern, shades on). Smirk / glare / roar / laugh exist only on the earlier
+code-sculpted head (`sb/bala.py`); for the game they need facial blend shapes on the retopologised FBX head.
 
 ## Known gaps before production
 
