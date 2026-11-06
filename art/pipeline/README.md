@@ -25,7 +25,7 @@ VP=$(which python) ./run_all.sh                                       # ~15 min 
 | `render_*.py` | Blender scenes → `art/build/*.exr` (`render_v2_all.sh` runs them all) |
 | `compose_v2.py` | EXR → finished boards in `art/concept/` |
 
-`comicfx.py` and the `compose_*.py` scripts other than `compose_v2.py` are the first-pass (v1) look, kept for reference.
+`comicfx.py` and `compose_keyart/cards/gameplay/select/stages/styleguide.py` are the first-pass (v1) look, kept for reference.
 
 Bala Simha boards: `python render_fbx.py && python compose_bala.py` (about 4 minutes).
 
