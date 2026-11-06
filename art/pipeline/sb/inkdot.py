@@ -130,6 +130,12 @@ def shade(P, meta, preset='sunset', style=None, H=None, steps=4):
     emit_m = table('emit')[mid] > 0
 
     base = saturate(to_srgb(P['albedo']), st['sat'])
+    from .pixclass import classify
+    PC = classify(P, base)
+    if PC is not None:
+        base = PC['base']
+        is_skin, is_glass, is_metal = PC['skin'], PC['glass'], PC['metal']
+        spec_s = np.where(PC['hair'], 0.6, np.where(PC['region'] == 2, 0.25, 0.0)).astype(np.float32)
     flat = base.copy()
     if steps == 1:
         return dict(color=flat, ink=np.zeros((h, w), np.float32), alpha=a, glow=np.zeros_like(flat), flat=flat)
@@ -201,7 +207,7 @@ def shade(P, meta, preset='sunset', style=None, H=None, steps=4):
         glow = to_srgb(cv2.GaussianBlur(e, (0, 0), 0.006 * H) * 0.7 + cv2.GaussianBlur(e, (0, 0), 0.02 * H) * 0.9)
     ink = np.zeros((h, w), np.float32)
     if steps >= 3:
-        ink = ink_alpha(P, st, H, skip=emit_any | is_ink, light=light)
+        ink = ink_alpha(dict(P, mat=PC['cls']) if PC is not None else P, st, H, skip=emit_any | is_ink, light=light)
     alpha = np.maximum(a, ink * (cv2.dilate((a > 0.01).astype(np.uint8), np.ones((5, 5), np.uint8)) > 0))
     return dict(color=np.clip(col, 0, 1), ink=ink, alpha=np.clip(alpha, 0, 1), glow=glow, flat=flat, light=light,
                 style=st)

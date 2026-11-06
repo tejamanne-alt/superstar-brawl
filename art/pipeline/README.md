@@ -11,6 +11,8 @@ VP=$(which python) ./run_all.sh                                       # ~15 min 
 | Module | What it does |
 |--------|--------------|
 | `sb/inkdot.py` | **the v2 shader**: flat colour → light as dots → ink line → slip + paper; `render_frame()`, `layer()` |
+| `sb/cover.py` | cover-look shader (soft brushy shadow, neon rims, tapered brush ink) used for the Bala hero boards |
+| `sb/fbxtex.py`, `sb/pixclass.py` | load the supplied textured Bala FBX; per-pixel skin / beard / hair / lens / gold classes |
 | `sb/facepaint.py` | draws comic faces (eyes, brows, nose marks, mouths, mustaches, beards, lines) as 2D artwork |
 | `sb/head.py` | skull shape, projected face decal, 3D nose / ears, sculpted hair volume + spikes, glasses, bandage, mask |
 | `sb/character.py` | rig and pose solver → lofted body with clothing seams and folds, hands, shoes, jackets, coats, dhotis |
@@ -24,5 +26,7 @@ VP=$(which python) ./run_all.sh                                       # ~15 min 
 | `compose_v2.py` | EXR → finished boards in `art/concept/` |
 
 `comicfx.py` and the `compose_*.py` scripts other than `compose_v2.py` are the first-pass (v1) look, kept for reference.
+
+Bala Simha boards: `python render_fbx.py && python compose_bala.py` (about 4 minutes).
 
 To tweak a fighter: edit their entry in `sb/roster.py`, then `python render_card.py <id> && python compose_v2.py cards`.

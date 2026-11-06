@@ -74,6 +74,13 @@ def shade(P, meta, style=None, H=None):
     emit_m = table('emit')[mid] > 0
 
     base = saturate(to_srgb(P['albedo']), 1.06)
+    from .pixclass import classify
+    PC = classify(P, base)
+    if PC is not None:   # textured model: per-pixel classes override the per-material flags
+        base = PC['base']
+        is_skin, is_fur, is_hair = PC['skin'], PC['fur'], PC['hair']
+        is_glass, is_metal, is_cloth = PC['glass'], PC['metal'], PC['cloth']
+        spec_s = np.where(is_hair, 0.7, np.where(PC['region'] == 2, 0.25, 0.0)).astype(np.float32)
     ke = meta.get('key_energy', 3.0)
     light = np.clip(lum(P['direct']) / (ke / math.pi), 0, 1.3)
     nrm = P['normal']
@@ -156,7 +163,7 @@ def shade(P, meta, style=None, H=None):
     col = np.where(emit_m[..., None], np.clip(em * 0.5 + 0.6, 0, 1), col)
 
     # ---- ink: heavy outside, light and broken inside, more on the shadow side
-    E = edges(P, n_thresh=0.42, d_thresh=0.025)
+    E = edges(dict(P, mat=PC['cls']) if PC is not None else P, n_thresh=0.42, d_thresh=0.025)
     s1080 = H / 1080.0
     wob = cv2.GaussianBlur(np.random.default_rng(5).normal(0, 1, (h, w)).astype(np.float32), (0, 0), 2.5 * s1080)
     wob = wob / (wob.std() + 1e-6) * 0.5 * s1080
@@ -169,6 +176,11 @@ def shade(P, meta, style=None, H=None):
             m = m & ~(is_fur & ~is_hair) & ~is_glass
         if k in ('mat', 'crease'):
             m = m & (gaps > -st['ink_break'])
+        if k != 'sil' and m.any():   # drop fragments too short to read as a stroke (they print as dots)
+            n, lbl, stats, _ = cv2.connectedComponentsWithStats(m.astype(np.uint8), connectivity=8)
+            keep = np.zeros(n, bool)
+            keep[1:] = stats[1:, cv2.CC_STAT_AREA] > max(6, int(0.012 * H))
+            m = keep[lbl]
         if not m.any():
             continue
         dist = cv2.distanceTransform((~m).astype(np.uint8), cv2.DIST_L2, 5).astype(np.float32)

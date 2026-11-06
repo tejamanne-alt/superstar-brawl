@@ -161,11 +161,11 @@ def model_sheet():
         d.rectangle([X, 1500, X + hw, 1500 + hw], outline=C(INK), width=4)
         text(d, (X + hw / 2, 1500 + hw + 32), lab, 30, INK, font='Anton-Regular.ttf', stroke=0)
     text(d, (90, 120), 'BALA SIMHA', 120, INK, font='Bangers-Regular.ttf', anchor='lm', stroke=0)
-    text(d, (790, 132), 'MODEL SHEET  •  FACTION SIMHA  •  from the supplied FBX sculpt', 40, INK, font='Anton-Regular.ttf',
+    text(d, (790, 132), 'MODEL SHEET  •  FACTION SIMHA  •  from the supplied textured FBX', 40, INK, font='Anton-Regular.ttf',
          anchor='lm', stroke=0)
-    text(d, (90, 215), 'FBX sculpt segmented into skin / hair / beard / mustache / aviators / gold / shirt / dhoti / sandals in '
-                       'Blender, painted by the cover shader.', 30, (0.35, 0.28, 0.32), font='Anton-Regular.ttf', anchor='lm',
-         stroke=0)
+    text(d, (90, 215), 'Supplied Meshy model (309k triangles, its own texture) rendered in Blender, then painted by the cover '
+                       'shader (skin, beard, hair and lenses told apart per pixel).', 30, (0.35, 0.28, 0.32),
+         font='Anton-Regular.ttf', anchor='lm', stroke=0)
 
     def P_(name):
         v = an.get(name)
@@ -173,10 +173,10 @@ def model_sheet():
             return None
         return (MX + (v[0] - cx0) * s, MY + (v[1] - cy0) * s)
     notes = [('hair', 'Big wavy swept-back hair, dark with grey sides'), ('tilak', 'Red tilak on the forehead'),
-             ('lens', 'Gold-wire aviators, dark olive lenses'), ('mustache', 'Thick dark mustache drooping into the beard'),
-             ('beard', 'Short salt-and-pepper beard, greyest at the chin'), ('pocket', 'Black shirt, sleeves rolled to the elbow'),
-             ('bracelet', 'Beaded bracelet (right wrist)'), ('watch', 'Gold watch (left wrist)'),
-             ('dhoti', 'Cream dhoti gathered in hand: the mass walk'), ('sandal', 'Kolhapuri sandals')]
+             ('lens', 'Aviators, dark olive lenses'), ('mustache', 'Thick dark mustache drooping into the beard'),
+             ('beard', 'Trimmed salt-and-pepper beard: dark cheeks, white chin'), ('pocket', 'Black shirt, sleeves rolled to the elbow'),
+             ('bracelet', 'Bracelet (right wrist)'), ('watch', 'Gold watch (left wrist)'),
+             ('dhoti', 'Khaki dhoti gathered in hand: the mass walk'), ('sandal', 'Kolhapuri sandals')]
     tx = 1080
     k = 0
     for name, lab in notes:
@@ -190,7 +190,7 @@ def model_sheet():
         d.rounded_rectangle([tx - 20, ty - 30, tx + 700, ty + 30], 10, fill=C((1, 1, 1), 215), outline=C(INK), width=3)
         text(d, (tx, ty), lab, 29, INK, font='Anton-Regular.ttf', anchor='lm', stroke=0)
     pal = [((0.80, 0.56, 0.42), 'skin'), ((0.12, 0.10, 0.11), 'hair'), ((0.64, 0.63, 0.66), 'grey'),
-           ((0.17, 0.17, 0.21), 'shirt'), ((0.95, 0.91, 0.80), 'dhoti'), ((0.95, 0.76, 0.30), 'gold'),
+           ((0.12, 0.10, 0.10), 'shirt'), ((0.60, 0.52, 0.40), 'dhoti'), ((0.95, 0.76, 0.30), 'gold'),
            ((0.84, 0.08, 0.12), 'tilak'), ((0.16, 0.19, 0.14), 'lens'), (ACC, 'accent')]
     px0, py0 = 3185, 1500
     text(d, (px0, py0 - 40), 'PALETTE', 40, INK, font='Bangers-Regular.ttf', anchor='lm', stroke=0)
@@ -234,7 +234,29 @@ def ingame():
     print('ingame')
 
 
-ALL = dict(hero=hero, sheet=model_sheet, ingame=ingame)
+def face():
+    """13: face study at the reference angle (cover look)."""
+    W, H = 1600, 2000
+    bg = painted_backdrop(W, H, seed=5)
+    rgba, P, meta = cover.layer(f'{B}/fbx_face.exr', out_size=(W, H))
+    a = rgba[..., 3]
+    edge = np.clip(cv2.GaussianBlur(a, (0, 0), 6) - cv2.GaussianBlur(a, (0, 0), 1.5), 0, 1) * a
+    blur_bg = cv2.GaussianBlur(bg.astype(np.float32), (0, 0), 25)
+    figure = rgba[..., :3] * (1 - edge[..., None] * 0.35) + blur_bg * edge[..., None] * 0.35
+    img = bg * (1 - a[..., None]) + figure * a[..., None]
+    pil = cp.to_pil(img).convert('RGBA')
+    d = ImageDraw.Draw(pil)
+    d.rectangle([0, H - 150, W, H], fill=C(INK, 235))
+    text(d, (60, H - 102), 'BALA SIMHA  •  FACE STUDY', 54, ACC, font='Anton-Regular.ttf', anchor='lm', stroke=0)
+    text(d, (60, H - 50), 'Wavy swept-back hair  •  red tilak  •  gold aviators  •  drooping dark mustache  •  '
+                          'salt-and-pepper beard, white at the chin', 26, (1, 1, 1), font='Anton-Regular.ttf', anchor='lm',
+         stroke=0)
+    text(d, (60, 70), 'SUPERSTAR BRAWL', 44, (1, 1, 1), anchor='lm', stroke=4)
+    save(cover.paper(cp.to_np(pil), 0.7), f'{OUT}/13_bala_face.png')
+    print('face')
+
+
+ALL = dict(hero=hero, sheet=model_sheet, ingame=ingame, face=face)
 if __name__ == '__main__':
     for n in (sys.argv[1:] or list(ALL)):
         ALL[n]()

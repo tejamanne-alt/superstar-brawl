@@ -23,6 +23,9 @@ def load(path):
     P['ao'] = out['Ambient Occlusion'][..., 0]
     P['emit'] = out['Emission'][..., :3]
     P['alpha'] = P['rgba'][..., 3] if P['rgba'] is not None else (P['obj'] > 0).astype(np.float32)
+    for n in ('metal', 'gloss', 'region', 'height', 'fur'):
+        if f'{n}.X' in out:
+            P[n] = out[f'{n}.X']
     meta = {}
     js = os.path.splitext(path)[0] + '.json'
     if os.path.exists(js):
