@@ -162,10 +162,13 @@ def loft(name, points, radius, ring=14, samples=6, side_hint=None, mats=None, ma
         b = poly[min(i + 1, n - 1)]
         t = (b - a)
         tangents.append(t.normalized() if t.length > 1e-9 else Vector((0, 0, 1)))
-    hint = Vector(side_hint) if side_hint is not None else None
+    hint_fn = side_hint if callable(side_hint) else None
+    hint = Vector(side_hint) if (side_hint is not None and hint_fn is None) else None
     frames = []
     prev_side = None
     for i, T in enumerate(tangents):
+        if hint_fn is not None:
+            hint = Vector(hint_fn(ts[i]))
         if hint is not None:
             side = hint - T * hint.dot(T)
             if side.length < 1e-4:

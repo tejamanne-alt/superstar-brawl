@@ -37,3 +37,10 @@ This concept art uses renamed, original takes, but a released game should keep t
 - No real names, logos or film titles inside the artwork. The `Inspired by` column exists only in internal docs.
 - No Sony/Marvel/Spider-Man characters, logos or designs. The "glitch" motif is our own film-strip / single-screen cinema
   language.
+
+## Art style (v2)
+
+The v2 look borrows the *general* conventions of modern teen-comic illustration and printed-comic rendering
+(halftone light, heavy ink, off-register colour). An art style as such is not protected, but specific characters,
+logos and cover trade dress are. The concept art therefore uses only our own nine fighters, our own logo and
+lettering, and no Archie Comics characters, names, logos or cover designs.

@@ -196,3 +196,32 @@ def paste_rgba(dst, src, x0, y0):
 def over_rgba(img, layer):
     a = layer[..., 3:4]
     return img * (1 - a) + layer[..., :3] * a
+
+
+def sky_comic(w, h, glow=(0.5, 0.62), night=False, seed=3):
+    """Reference-style sky: flat graded magenta -> orange with a big halftone screen whose dots
+    swell toward the sun glow (no brush clouds, no blur)."""
+    s = h / 1080
+    if night:
+        img = vgrad(h, w, [(0.0, (0.10, 0.08, 0.32)), (0.45, (0.30, 0.14, 0.52)), (0.75, (0.72, 0.22, 0.58)),
+                           (1.0, (0.95, 0.42, 0.50))])
+        dot_col = np.array([0.95, 0.45, 0.80])
+    else:
+        img = vgrad(h, w, [(0.0, (0.86, 0.22, 0.58)), (0.30, (0.96, 0.34, 0.50)), (0.55, (1.0, 0.52, 0.34)),
+                           (0.75, (1.0, 0.70, 0.36)), (1.0, (1.0, 0.82, 0.48))])
+        dot_col = np.array([1.0, 0.86, 0.40])
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    d = np.sqrt(((xx - glow[0] * w) / w) ** 2 + ((yy - glow[1] * h) / w) ** 2)
+    cov = np.clip(1 - d / 0.55, 0, 1) ** 1.4 * 0.75
+    dots = halftone_mask(h, w, cov, 15 * s, 45)
+    img = img * (1 - dots[..., None]) + dot_col * dots[..., None]
+    # upper sky: darker magenta dots fading out
+    cov2 = smoothstep(0.38, 0.0, yy / h) * 0.28
+    d2 = halftone_mask(h, w, cov2, 11 * s, 15)
+    img = img * (1 - d2[..., None] * 0.9) + (np.array([0.55, 0.12, 0.55]) if not night else np.array([0.05, 0.04, 0.2])) * d2[..., None] * 0.9
+    if night:
+        rng = np.random.default_rng(seed)
+        st = (rng.random((h, w)) > 0.9994).astype(np.float32)
+        st = cv2.dilate(st, np.ones((max(2, int(2 * s)), max(2, int(2 * s))), np.uint8))
+        img = img + st[..., None] * smoothstep(0.6, 0.0, yy / h)[..., None] * 0.9
+    return np.clip(img, 0, 1)

@@ -3,7 +3,8 @@
 **Genre:** 2.5D one-on-one fighter (3D characters on a 2D fighting plane, parallax backgrounds)
 **Platforms:** iOS + Android (Unity 6 LTS, URP), landscape 19.5:9, touch-first
 **Pitch:** Nine larger-than-life "superstars" from South and North Indian cinema, rebuilt as comic-book avatars, brawl across a film-reel multiverse ("the Filmverse").
-**Look:** Hand-printed comic, built on real 3D. See `ART_BIBLE.md` and `art/concept/07_style_guide.png`.
+**Look:** "Ink-dot" printed comic on real 3D (flat colour, light as dots, heavy ink, slip + paper), with characters
+drawn in a modern teen-comic style. See `ART_BIBLE.md` and `art/concept/09_style_guide.png`.
 
 ## Story hook
 
@@ -35,6 +36,8 @@ Each alternate avatar is a full outfit + intro + super, not just a recolour.
 ## Core systems
 
 - **Controls (touch):** virtual stick + Punch / Kick / Special / Block + context **SUPER** button (see `04_gameplay_mockup.png`).
+- **Comic presentation:** big hits freeze into a comic panel for a few frames with SFX lettering (`06_action_panels.png`);
+  the screen escalates with the meter: more speed lines, glow and plate slip at MASS ×2 and FULL MASS (`07_mass_meter.png`).
   Simple-input mode maps specials to swipe gestures; Pro mode keeps motion inputs for controller players.
 - **Mass Meter:** 3 segments, filled by landing hits *and* by "whistle moments" (taunts, perfect blocks, crowd-pleasing finishes).
   1 segment = EX special, 3 = Super. Each fighter renames it (Mass / Style / Victory...) for flavour.
@@ -50,9 +53,10 @@ rollback netcode) · Training · Daily "First Day First Show" challenge.
 
 ## Stages (concept)
 
-1. **Single Screen Showdown:** cinema rooftop at golden hour, Hyderabad-style skyline (`06_stage1.png`).
-2. **Necklace Night:** sea-front promenade at night, arc of lamps on the bay (`06_stage2.png`).
-3. Planned: Temple-Town Festival, Film-City Backlot, Rain-Song Railway Platform, Interval Canteen.
+1. **Cinema Street:** old-city main road at golden hour; the fight plane crosses the street and the single-screen
+   cinema closes the far end (`08_stage1.png`). Hazard: a runaway auto-rickshaw.
+2. **Necklace Night:** sea-front promenade at night, arc of lamps on the bay (`08_stage2.png`).
+3. Planned: Single-Screen Rooftop, Temple-Town Festival, Film-City Backlot, Rain-Song Railway Platform, Interval Canteen.
 
 ## Tech plan (Unity)
 
@@ -68,4 +72,4 @@ rollback netcode) · Training · Daily "First Day First Show" challenge.
 1. Decide the likeness strategy (licence vs. original archetypes); see `LEGAL_NOTE.md`.
 2. Lock 2–3 fighters for a vertical slice (suggest Bala Simha, Raja Kanth, Mega Chiran) and one stage.
 3. Character sculpts (ZBrush/Blender) from licensed reference, retopology, rig, facial blend shapes.
-4. Unity project: URP comic shader prototype matching `07_style_guide.png`, then the combat sandbox.
+4. Unity project: URP comic shader prototype matching `09_style_guide.png`, then the combat sandbox.

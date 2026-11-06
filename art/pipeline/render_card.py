@@ -15,8 +15,8 @@ scene.reset(W, Hh, samples=16)
 ml = MatLib()
 ch = Character(spec, spec['pose'], ml, 1)
 objs = ch.build()
-scene.add_sun(spec.get('key', (-0.85, 0.22, -0.48)), 3.0)
-cam = framing.fit_camera(objs, yaw_deg=yaw, pitch_deg=pitch, lens=35, margin=spec.get('card_margin', 1.36), aspect=W / Hh)
-cam.data.shift_x = -0.10
-cam.data.shift_y = -0.115
+scene.add_sun(spec.get('key', (0.42, 0.62, -0.66)), 3.0)
+cam = framing.fit_camera(objs, yaw_deg=yaw, pitch_deg=pitch, lens=35, margin=spec.get('card_margin', 1.20), aspect=W / Hh)
+cam.data.shift_x = 0.0
+cam.data.shift_y = -0.06
 scene.render(out, ml, meta=dict(id=cid))

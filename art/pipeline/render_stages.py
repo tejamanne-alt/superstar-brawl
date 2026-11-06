@@ -1,8 +1,9 @@
-"""Stage concept renders: Stage 1 establishing shot + Stage 2 night promenade (1.5x supersampled)."""
+"""Stage concept renders (1.5x supersampled): Stage 1 Cinema Street, Stage 2 Necklace Night."""
 import sys, os
 sys.path.insert(0, os.path.dirname(__file__))
 import bpy  # noqa
-from sb import scene, roster, environment as env
+from mathutils import Vector
+from sb import scene, roster, environment as env, street
 from sb.geo import MatLib
 from sb.character import Character
 build = os.path.join(os.path.dirname(__file__), '../build')
@@ -11,12 +12,11 @@ W, H = 2880, 1620
 if which in ('1', 'both'):
     scene.reset(W, H, samples=16, ao_distance=0.3)
     ml = MatLib()
-    env.rooftop(ml, build)
-    env.city(ml, seed=7)
-    env.kites(ml, n=9)
-    scene.add_sun((0.62, 0.55, -0.55), 3.0)
-    cam = scene.add_camera((-9.0, -9.5, 3.2), (1.0, 4.0, 2.2), lens=24)
-    scene.render(os.path.join(build, 'stage1.exr'), ml, meta=dict(shot='stage1'))
+    street.street(ml, build)
+    scene.add_sun((0.45, 0.55, -0.70), 3.0)
+    scene.add_camera((-2.5, -12.0, 5.2), (0.5, 40.0, 3.4), lens=22)
+    scene.render(os.path.join(build, 'stage1.exr'), ml, meta=dict(shot='stage1', anchors=scene.project(
+        dict(vanish=Vector((0, 150, 2.0))))))
 if which in ('2', 'both'):
     scene.reset(W, H, samples=16, ao_distance=0.3)
     ml = MatLib()

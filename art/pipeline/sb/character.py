@@ -93,10 +93,10 @@ class Character:
     # ------------------------------------------------------------------ rig
     def solve(self):
         H, sp, po = self.H, self.spec, self.pose
-        hs = 0.081 * sp.get('head_scale', 1.0)
-        L = dict(spine=0.30 * H, neck=0.045 * H, head=1.12 * hs * H, sw=0.13 * H * sp.get('shoulders', 1.0),
-                 hw=0.058 * H * sp.get('hips', 1.0), ua=0.165 * H, fa=0.15 * H, th=0.245 * H,
-                 sh=0.24 * H, ankle=0.045 * H)
+        hs = 0.071 * sp.get('head_scale', 1.0)
+        L = dict(spine=0.29 * H, neck=0.055 * H, head=1.18 * hs * H, sw=0.110 * H * sp.get('shoulders', 1.0),
+                 hw=0.058 * H * sp.get('hips', 1.0), ua=0.165 * H, fa=0.15 * H, th=0.255 * H,
+                 sh=0.255 * H, ankle=0.045 * H)
         self.L = L
         J = {}
         P = Vector((0, 0, 0))
@@ -113,7 +113,7 @@ class Character:
         lat_c = Quaternion(spine, tw) @ lat_p
         self.lat_p, self.lat_c, self.spine_dir, self.neck_dir = lat_p, lat_c, spine, neck
         for s, side in (('L', 1), ('R', -1)):
-            S = J['chest'] + lat_c * (side * L['sw']) - spine * (0.02 * H)
+            S = J['chest'] + lat_c * (side * L['sw']) - spine * (0.034 * H)
             J['sh' + s] = S
             a = po.get('arm' + s, {})
             up = N(a.get('upper', (side * 0.25, 0.0, -1)))
@@ -184,13 +184,13 @@ class Character:
         P, C, Nk, Hd = J['pelvis'], J['chest'], J['neck'], J['head']
         sv = C - P
         pts = [P - self.spine_dir * 0.075 * H, P, P + sv * 0.40, P + sv * 0.72, C,
-               C + self.neck_dir * 0.03 * H, Nk, Hd - self.neck_dir * 0.035 * H]
+               C + self.neck_dir * 0.03 * H, Nk, Hd - self.neck_dir * 0.040 * H]
         ts = _ctrl_ts(pts)
-        neckr = 0.037 * sp.get('neck_w', 1.0)
-        rad = _profile(ts, [(0.080 * b, 0.062), (0.100 * b * sp.get('hips', 1), 0.072),
-                            (0.084 * b * (1 + belly * 0.25), 0.064 * (1 + belly * 0.5)),
-                            (0.120 * b * chestb, 0.080 * chestb), (0.126 * b * sp.get('shoulders', 1), 0.068),
-                            (0.078 * b, 0.052), (neckr, neckr), (neckr * 0.95, neckr * 0.95)])
+        neckr = 0.031 * sp.get('neck_w', 1.0)
+        rad = _profile(ts, [(0.078 * b, 0.060), (0.094 * b * sp.get('hips', 1), 0.068),
+                            (0.080 * b * (1 + belly * 0.25), 0.060 * (1 + belly * 0.5)),
+                            (0.112 * b * chestb, 0.078 * chestb), (0.112 * b * sp.get('shoulders', 1), 0.064),
+                            (0.070 * b, 0.048), (neckr, neckr * 1.05), (neckr * 0.95, neckr * 0.95)])
         rad_H = lambda t: tuple(r * H for r in rad(t))
         o = sp['outfit']
         top_t = _profile([0, 1], [0, 1])
@@ -242,7 +242,7 @@ class Character:
         inner = S - self.lat_c * (side * 0.035 * H) + self.spine_dir * 0.01 * H
         pts = [inner, S, S.lerp(E, 0.5), E, E.lerp(Wr, 0.35), Wr]
         ts = _ctrl_ts(pts)
-        rad = _profile(ts, [0.050 * b, 0.055 * b, 0.045 * b, 0.033 * b, 0.039 * b, 0.025 * b])
+        rad = _profile(ts, [0.038 * b, 0.044 * b, 0.040 * b, 0.030 * b, 0.036 * b, 0.023 * b])
         o = sp['outfit']
         sl = o.get('sleeve', 1.0)
         a_over = self.pose.get('arm' + s, {}).get('sleeve')
@@ -295,7 +295,7 @@ class Character:
         Hp, K, A = J['hip' + s], J['kn' + s], J['an' + s]
         pts = [Hp + self.spine_dir * 0.06 * H, Hp, Hp.lerp(K, 0.45), K, K.lerp(A, 0.3), A]
         ts = _ctrl_ts(pts)
-        rad = _profile(ts, [0.068 * b, 0.071 * b, 0.060 * b, 0.043 * b, 0.048 * b, 0.029 * b])
+        rad = _profile(ts, [0.064 * b, 0.067 * b, 0.056 * b, 0.040 * b, 0.045 * b, 0.027 * b])
         o = sp['outfit']
         loose = o.get('loose_pants', 0.0)
         cloth = (0.008 + loose * 0.03) * H
@@ -339,7 +339,7 @@ class Character:
         thumb = -side  # thumb on -x for left hand with this construction
         M = Matrix((x, y, z)).transposed().to_4x4()
         M.translation = Wr
-        u = 0.1 * H  # hand length unit
+        u = 0.092 * H  # hand length unit
         gm = self.spec['outfit'].get('gloves')
         mat = self.mat('gloves') if gm else self.mat('skin')
         if s == 'R' and self.spec['outfit'].get('steel_arm'):
@@ -433,7 +433,7 @@ class Character:
         h = {'sneaker': 0.075, 'boot': 0.11, 'formal': 0.06}.get(kind, 0.07)
 
         def shoe(p):
-            q = Vector((p.x * 0.043 * u, (p.y * 0.5 + 0.38) * 0.155 * u, (p.z * 0.5 + 0.2) * h * u))
+            q = Vector((p.x * 0.036 * u, (p.y * 0.5 + 0.38) * 0.142 * u, (p.z * 0.5 + 0.2) * h * 0.85 * u))
             if p.y > 0.0:
                 q.z = lerp(q.z, min(q.z, 0.035 * u), smoothstep(0.0, 0.8, p.y))
             q.x *= 1.0 - 0.3 * smoothstep(0.5, 1.0, p.y)
@@ -441,7 +441,7 @@ class Character:
         self.track(blob(self.nm('shoe' + s), shoe, segments=20, rings=12, mats=[self.mat('shoe')], matrix=M))
         if kind in ('sneaker', 'boot'):
             def sole(p):
-                q = Vector((p.x * 0.054 * u, (p.y * 0.5 + 0.36) * 0.158 * u, p.z * 0.012 * u - 0.046 * u))
+                q = Vector((p.x * 0.044 * u, (p.y * 0.5 + 0.37) * 0.146 * u, p.z * 0.011 * u - 0.044 * u))
                 return q
             self.track(blob(self.nm('sole' + s), sole, segments=20, rings=8, mats=[self.mat('sole')], matrix=M))
         if kind == 'boot':
@@ -495,13 +495,6 @@ class Character:
                 arc.append(nb + (self.lat_c * math.sin(th) + back * math.cos(th)) * 0.062 * H + self.neck_dir * 0.012 * H)
             self.track(loft(self.nm('collar_stand'), arc, lambda t: (0.026 * H, 0.006 * H), ring=8, samples=4,
                             side_hint=self.neck_dir, mats=[self.mat('jacket')]))
-            for side in (-1, 1):
-                p0 = nb + self.lat_c * (side * 0.055 * H) + fwd * 0.035 * H
-                p1 = C + self.lat_c * (side * 0.062 * H) + fwd * 0.095 * H - self.spine_dir * 0.035 * H
-                p2 = C + self.lat_c * (side * 0.045 * H) + fwd * 0.10 * H - self.spine_dir * 0.12 * H
-                self.track(loft(self.nm(f'lapel{side}'), [p0, p1, p2],
-                                lambda t: (0.026 * H * (1 - 0.5 * t), 0.005 * H), ring=8, samples=4,
-                                side_hint=self.lat_c, mats=[self.mat('jacket')]))
         if jk.get('tails'):
             self.coat_tails(jk)
 
@@ -629,7 +622,7 @@ class Character:
         f2 = Rh @ fwd
         u2 = Rh @ up
         u2 = Matrix.Rotation(hr, 3, f2) @ u2
-        s = 0.081 * H * self.spec.get('head_scale', 1.0)
+        s = 0.071 * H * self.spec.get('head_scale', 1.0)
         M = look_matrix(f2, u2, J['head']) @ Matrix.Diagonal((s, s, s, 1))
         self.head_matrix = M
         face = dict(self.spec['face'])
