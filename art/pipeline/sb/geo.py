@@ -88,7 +88,7 @@ class MatLib:
         for n in nt.nodes:
             if n.type == 'BSDF_PRINCIPLED':
                 bsdf = n
-        srgb = tuple(color[:3])
+        srgb = tuple(float(c) for c in color[:3])
         c = srgb_to_linear(srgb) + (1.0,)
         bsdf.inputs['Base Color'].default_value = c
         bsdf.inputs['Roughness'].default_value = 1.0
